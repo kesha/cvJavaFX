@@ -44,23 +44,24 @@ public class ComputerVision {
         Mat source = Highgui.imread("test.png");
         Mat image = source.clone();
         MatOfByte matOfByte = new MatOfByte();
-        List<MatOfPoint> cells = getCells(image);
-        Collections.sort(cells, new MatOfPointComparator());
-        for (MatOfPoint matOfPoint : cells) {
+        List<MatOfPoint> contours = getContours(image);
+        Board board = new Board(image, contours);
+        Collections.sort(contours, new MatOfPointComparator());
+        for (MatOfPoint matOfPoint : contours) {
             System.out.println(Arrays.toString(matOfPoint.toArray()));
         }
-        Imgproc.drawContours(source, cells, -1, new Scalar(0, 0, 255));
-        for (int i = 0; i < cells.size(); i++) {
-            MatOfPoint matOfPoint = cells.get(i);
+        Imgproc.drawContours(source, contours, -1, new Scalar(0, 0, 255));
+        for (int i = 0; i < contours.size(); i++) {
+            MatOfPoint matOfPoint = contours.get(i);
             Core.putText(source, Integer.toString(i+1), Util.getFirstPoint(matOfPoint), 1, 1, new Scalar(0, 0, 255), 2);           
         }
-        System.out.println("Found " + cells.size() + " cells.");
+        System.out.println("Found " + contours.size() + " cells.");
         Highgui.imencode(".png", source, matOfByte);
         return matOfByte.toArray();
 
     }
 
-    public static List<MatOfPoint> getCells(Mat image) {
+    public static List<MatOfPoint> getContours(Mat image) {
         List<MatOfPoint> cells = new ArrayList<>();
 
         Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2GRAY);
